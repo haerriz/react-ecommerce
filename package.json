@@ -1,5 +1,6 @@
 {
   "name": "my-app",
+  "homepage": "https://haerriz.github.io/react-ecommerce",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -33,6 +34,8 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
     "start": "concurrently \"npm run client\" \"npm run server\"",
     "client": "react-scripts start",
     "server": "nodemon api/server.js",
@@ -58,5 +61,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "gh-pages": "^6.1.1"
   }
 }
