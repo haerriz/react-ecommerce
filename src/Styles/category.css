@@ -1,0 +1,6 @@
+.App-category {
+    background: #61dafb;
+    padding: 5px;
+    display: flex;
+    justify-content: center;
+}
