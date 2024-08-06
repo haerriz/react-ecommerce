@@ -1,4 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+
+// Utility function to set and get user from local storage
+const saveUserToLocalStorage = (user) => {
+    localStorage.setItem('user', JSON.stringify(user));
+};
+
+const getUserFromLocalStorage = () => {
+    const user = localStorage.getItem('user');
+    return user ? JSON.parse(user) : null;
+};
 
 const Login = () => {
     const [inputs, setInputs] = useState({
@@ -8,6 +18,13 @@ const Login = () => {
     const [errors, setErrors] = useState({});
     const [message, setMessage] = useState('');
     const [user, setUser] = useState(null);
+
+    useEffect(() => {
+        const storedUser = getUserFromLocalStorage();
+        if (storedUser) {
+            setUser(storedUser);
+        }
+    }, []);
 
     const handleInputChange = (event) => {
         const { name, value } = event.target;
@@ -53,6 +70,7 @@ const Login = () => {
                 if (response.ok) {
                     setMessage('Login successful');
                     setUser(data.user);
+                    saveUserToLocalStorage(data.user);
                 } else {
                     setMessage(data.error);
                 }
@@ -64,45 +82,56 @@ const Login = () => {
         }
     };
 
+    const handleLogout = () => {
+        setUser(null);
+        localStorage.removeItem('user');
+        setMessage('Logged out successfully');
+    };
+
     return (
-        <>
-            <div>
-                <p>This is a Login Form</p>
-                <form onSubmit={handleSubmit}>
-                    <div className="form-group">
-                        <div className="input-group">
-                            <label>Email:</label>
-                            <input
-                                type="text"
-                                name="email"
-                                placeholder="Your email here!"
-                                value={inputs.email}
-                                onChange={handleInputChange}
-                            />
-                            {errors.email && <p style={{ color: 'red' }}>{errors.email}</p>}
+        <div>
+            {user ? (
+                <>
+                    <p>Logged in as: {user.email}</p>
+                    <button onClick={handleLogout}>Logout</button>
+                </>
+            ) : (
+                <>
+                    <p>This is a Login Form</p>
+                    <form onSubmit={handleSubmit}>
+                        <div className="form-group">
+                            <div className="input-group">
+                                <label>Email:</label>
+                                <input
+                                    type="text"
+                                    name="email"
+                                    placeholder="Your email here!"
+                                    value={inputs.email}
+                                    onChange={handleInputChange}
+                                />
+                                {errors.email && <p style={{ color: 'red' }}>{errors.email}</p>}
+                            </div>
+                            <div className="input-group">
+                                <label>Password:</label>
+                                <input
+                                    type="password"
+                                    name="password"
+                                    placeholder="Your password here!"
+                                    value={inputs.password}
+                                    onChange={handleInputChange}
+                                />
+                                {errors.password && <p style={{ color: 'red' }}>{errors.password}</p>}
+                            </div>
+                            <div className="input-group">
+                                <button type="submit">Login</button>
+                            </div>
                         </div>
-                        <div className="input-group">
-                            <label>Password:</label>
-                            <input
-                                type="password"
-                                name="password"
-                                placeholder="Your password here!"
-                                value={inputs.password}
-                                onChange={handleInputChange}
-                            />
-                            {errors.password && <p style={{ color: 'red' }}>{errors.password}</p>}
-                        </div>
-                        <div className="input-group">
-                            <button type="submit">Login</button>
-                        </div>
-                    </div>
-                </form>
-                {message && <p>{message}</p>}
-                {user && <p>Logged in as: {user.email}</p>}
-            </div>
-        </>
+                    </form>
+                    {message && <p>{message}</p>}
+                </>
+            )}
+        </div>
     );
 };
 
 export default Login;
-
